@@ -2,7 +2,7 @@ esphome:
   name: ewaterlevel-calibrate-console
 
 external_components:
-  - source: github://Fabian-Schmidt/esphome-ewaterlevel
+  - source: github://Evgenyiva/esphome-ewaterlevel-ble
     components: ["ewaterlevel_ble"]
 
 esp32:
