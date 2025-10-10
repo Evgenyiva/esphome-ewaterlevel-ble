@@ -1,6 +1,10 @@
 # ESP HOME component for E-Waterlevel by E-Trailer
-
 Read E-Trailer E-Waterlevel directly with ESP Home.
+
+## This is a fork of https://github.com/Fabian-Schmidt/esphome-ewaterlevel. 
+
+The Dev seems inactive and does not respond to issues.
+In this fork, I have fixed the issue with compiling.
 
 ## 1. Find Sensor
 
