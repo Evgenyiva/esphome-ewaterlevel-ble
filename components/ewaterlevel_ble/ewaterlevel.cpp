@@ -8,10 +8,10 @@
 namespace esphome {
 namespace ewaterlevel_ble {
 
-static const char *const TAG = "ewaterlevel_ble";
+static const char *const TAG = "e-waterlevel_ble";
 
 void EWaterLevel::dump_config() {
-  ESP_LOGCONFIG(TAG, "E-Waterlevel");
+  ESP_LOGCONFIG(TAG, "E-Waterlevel-BLE");
   ESP_LOGCONFIG(TAG, "  Address: %s", format_ble_address_pretty(this->address_).c_str());
   ESP_LOGCONFIG(TAG, "  Min value: %.3f", this->min_value_);
   ESP_LOGCONFIG(TAG, "  Max value: %.3f", this->max_value_);
@@ -48,6 +48,7 @@ bool EWaterLevel::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
   const esphome::esp32_ble::BLEScanResult &scan_result = device.get_scan_result();
   const uint8_t *payload = scan_result.get_adv_data();
   uint8_t len = scan_result.get_adv_data_len();
+
   if (len == sizeof(ewaterlevel_data)) {
     const ewaterlevel_data *data = (ewaterlevel_data *) payload;
     if (!data->validate_header()) {
