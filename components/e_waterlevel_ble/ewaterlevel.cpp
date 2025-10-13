@@ -46,8 +46,14 @@ bool EWaterLevel::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
   }
 
   const esphome::esp32_ble::BLEScanResult &scan_result = device.get_scan_result();
-  const uint8_t *payload = scan_result.adv_data;
-  uint8_t len = scan_result.adv_data_len;
+  auto mfg_datas = scan_result.get_manufacturer_datas();
+  if (mfg_datas.empty()) {
+    return false;
+  }
+  auto mfg_data = mfg_datas[0];
+
+  const uint8_t *payload = mfg_data.data.data();
+  uint8_t len = mfg_data.data.size();
 
   if (len == sizeof(ewaterlevel_data)) {
     const ewaterlevel_data *data = (ewaterlevel_data *) payload;
