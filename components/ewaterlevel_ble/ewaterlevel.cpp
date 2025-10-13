@@ -38,6 +38,8 @@ void EWaterLevel::dump_config() {
  * - Bluetooth data frame header
  */
 bool EWaterLevel::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
+  ESP_LOGV(TAG, "Parse device started!");
+
   if (this->address_ != 0) {
     if (device.address_uint64() != this->address_) {
       return false;
