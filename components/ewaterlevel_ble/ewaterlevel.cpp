@@ -38,13 +38,13 @@ void EWaterLevel::dump_config() {
  * - Bluetooth data frame header
  */
 bool EWaterLevel::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
-  ESP_LOGV(TAG, "Parse device started!");
+  ESP_LOGI(TAG, "Parse device started!");
 
   if (this->address_ != 0) {
     if (device.address_uint64() != this->address_) {
       return false;
     }
-    ESP_LOGVV(TAG, "parse_device(): MAC address %s found.", device.address_str().c_str());
+    ESP_LOGI(TAG, "parse_device(): MAC address %s found.", device.address_str().c_str());
   }
 
   auto mfg_datas = device.get_manufacturer_datas();
@@ -56,12 +56,12 @@ bool EWaterLevel::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
   const uint8_t *payload = mfg_data.data.data();
   uint8_t len = mfg_data.data.size();
 
-  ESP_LOGV(TAG, "Manufacturer data size: %u (expected: %u)", len, sizeof(ewaterlevel_data));
+  ESP_LOGI(TAG, "Manufacturer data size: %u (expected: %u)", len, sizeof(ewaterlevel_data));
 
   if (len == sizeof(ewaterlevel_data)) {
     const ewaterlevel_data *data = (ewaterlevel_data *) payload;
     if (!data->validate_header()) {
-      ESP_LOGV(TAG, "Header validation failed!");
+      ESP_LOGI(TAG, "Header validation failed!");
       return false;
     }
 
