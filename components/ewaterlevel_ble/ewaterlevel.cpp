@@ -64,6 +64,14 @@ bool EWaterLevel::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
 
   ESP_LOGI(TAG, "Manufacturer data size: %u (expected: %u)", len, sizeof(ewaterlevel_data));
 
+  // ASCII-Ausgabe der Manufacturer Data
+  std::string ascii;
+  for (uint8_t i = 0; i < len; i++) {
+    char c = payload[i];
+    ascii += (c >= 32 && c <= 126) ? c : '.';
+  }
+  ESP_LOGI(TAG, "Manufacturer data (ASCII): %s", ascii.c_str());
+
   if (len == sizeof(ewaterlevel_data)) {
     const ewaterlevel_data *data = (ewaterlevel_data *) payload;
     if (!data->validate_header()) {
