@@ -45,8 +45,7 @@ bool EWaterLevel::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
     ESP_LOGVV(TAG, "parse_device(): MAC address %s found.", device.address_str().c_str());
   }
 
-  const esphome::esp32_ble::BLEScanResult &scan_result = device.get_scan_result();
-  auto mfg_datas = scan_result.get_manufacturer_datas();
+  auto mfg_datas = device.get_manufacturer_datas();
   if (mfg_datas.empty()) {
     return false;
   }
