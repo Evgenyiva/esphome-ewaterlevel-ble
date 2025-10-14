@@ -71,10 +71,10 @@ bool EWaterLevel::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
 
     ESP_LOGV(TAG, "[%s] Sensor data: %s", device.address_str().c_str(),
              format_hex_pretty(payload, len).c_str());
-    ESP_LOGD(TAG, "[%s] HW: V%u.%u SW: V%u.%u, ShortPin: %.1fcm, LongPin: %.1fcm", device.address_str().c_str(),
+    ESP_LOGI(TAG, "[%s] HW: V%u.%u SW: V%u.%u, ShortPin: %.1fcm, LongPin: %.1fcm", device.address_str().c_str(),
              data->version_hw_high, data->version_hw_low, data->version_sw_high, data->version_sw_low,
              data->read_short_pin_length(), data->read_long_pin_length());
-    ESP_LOGD(TAG, "[%s] State_A: %s, State_B: %s, State_C: %s", device.address_str().c_str(),
+    ESP_LOGI(TAG, "[%s] State_A: %s, State_B: %s, State_C: %s", device.address_str().c_str(),
              format_hex(&data->state_a, 1).c_str(), format_hex(&data->state_b, 1).c_str(),
              format_hex(&data->state_c, 1).c_str());
     ESP_LOGI(TAG, "[%s] Time: %.2f, Bat: %.3fV, Value: %.3f", device.address_str().c_str(), data->read_counter(),
