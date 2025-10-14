@@ -46,7 +46,18 @@ bool EWaterLevel::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
     }
   }
   ESP_LOGI(TAG, "Found BLE device: %s (Name: %s)", device.address_str().c_str(), device.get_name().c_str());
+  // Logge Appearance und Advertising Flags
+  ESP_LOGI(TAG, "[%s] Appearance: 0x%04X", device.address_str().c_str(), device.get_appearance());
+  ESP_LOGI(TAG, "[%s] AD Flags: 0x%02X", device.address_str().c_str(), device.get_ad_flag());
 
+  // Logge alle Service Data-Blöcke
+  auto service_datas = device.get_service_datas();
+  for (const auto &sd : service_datas) {
+    ESP_LOGI(TAG, "[%s] Service Data: UUID: %s, Data: %s",
+             device.address_str().c_str(),
+             format_hex_pretty(sd.uuid.data(), sd.uuid.size()).c_str(),
+             format_hex_pretty(sd.data.data(), sd.data.size()).c_str());
+  }
   auto mfg_datas = device.get_manufacturer_datas();
   if (mfg_datas.empty()) {
     return false;
@@ -55,6 +66,9 @@ bool EWaterLevel::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
 
   const uint8_t *payload = mfg_data.data.data();
   uint8_t len = mfg_data.data.size();
+
+  ESP_LOGI(TAG, "Manufacturer data size: %u (expected: %u)", len, sizeof(ewaterlevel_data));
+
   if (len == sizeof(ewaterlevel_data)) {
     const ewaterlevel_data *data = (ewaterlevel_data *) payload;
     //if (!data->validate_header()) {
@@ -67,7 +81,7 @@ bool EWaterLevel::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
     }
 
     ESP_LOGV(TAG, "[%s] Sensor data: %s", device.address_str().c_str(),
-             format_hex_pretty(param.ble_adv + 9, param.adv_data_len + param.scan_rsp_len - 10).c_str());
+             format_hex_pretty(payload, len).c_str());
     ESP_LOGD(TAG, "[%s] HW: V%u.%u SW: V%u.%u, ShortPin: %.1fcm, LongPin: %.1fcm", device.address_str().c_str(),
              data->version_hw_high, data->version_hw_low, data->version_sw_high, data->version_sw_low,
              data->read_short_pin_length(), data->read_long_pin_length());
