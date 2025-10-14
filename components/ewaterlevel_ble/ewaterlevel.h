@@ -63,11 +63,11 @@ struct ewaterlevel_data {  // NOLINT(readability-identifier-naming,altera-struct
   u_int8_t state_c;
   u_int8_t empty;
 
-  inline bool validate_header() const {
-    return this->preamble[0] == 0x02 && this->preamble[1] == 0x01 && this->preamble[2] == 0x06 &&
-           this->preamble[3] == 0x17 && this->preamble[4] == 0xFF && this->header[0] == 'W' && this->header[1] == 'T' &&
-           this->header[2] == 'R' && this->header[3] == 'L';
-  }
+  // inline bool validate_header() const {
+  //   return this->preamble[0] == 0x02 && this->preamble[1] == 0x01 && this->preamble[2] == 0x06 &&
+  //          this->preamble[3] == 0x17 && this->preamble[4] == 0xFF && this->header[0] == 'W' && this->header[1] == 'T' &&
+  //          this->header[2] == 'R' && this->header[3] == 'L';
+  // }
 
   inline bool validate_state_a() const { return this->state_a > 0x00 && this->state_a < 0x06; }
 

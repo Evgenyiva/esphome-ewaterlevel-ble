@@ -57,10 +57,10 @@ bool EWaterLevel::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
   uint8_t len = mfg_data.data.size();
   if (len == sizeof(ewaterlevel_data)) {
     const ewaterlevel_data *data = (ewaterlevel_data *) payload;
-    if (!data->validate_header()) {
-      ESP_LOGI(TAG, "Header validation failed!");
-      return false;
-    }
+    //if (!data->validate_header()) {
+    //  ESP_LOGI(TAG, "Header validation failed!");
+    //  return false;
+    //}
 
     if (this->address_ == 0) {
       ESP_LOGI(TAG, "E-Waterlevel SENSOR FOUND: %s", device.address_str().c_str());
