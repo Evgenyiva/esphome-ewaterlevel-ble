@@ -48,6 +48,8 @@ bool EWaterLevel::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
   }
   ESP_LOGI(TAG, "Found BLE device: %s (Name: %s)", device.address_str().c_str(), device.get_name().c_str());
 
+
+
   auto mfg_datas = device.get_manufacturer_datas();
   if (mfg_datas.empty()) {
     return false;
@@ -58,7 +60,9 @@ bool EWaterLevel::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
   uint8_t len = mfg_data.data.size();
 
   ESP_LOGI(TAG, "Manufacturer data size: %u (expected: %u)", len, sizeof(ewaterlevel_data));
-
+  if(len >= 20){
+    ESP_LOGI(TAG, "Raw manufacturer data: %s", format_hex_pretty(payload, len).c_str());
+  }
   if (len == sizeof(ewaterlevel_data)) {
     const ewaterlevel_data *data = (ewaterlevel_data *) payload;
     if (!data->validate_header()) {
