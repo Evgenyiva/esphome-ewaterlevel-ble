@@ -54,9 +54,9 @@ bool EWaterLevel::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
   auto service_datas = device.get_service_datas();
   for (const auto &sd : service_datas) {
     ESP_LOGI(TAG, "[%s] Service Data: UUID: %s, Data: %s",
-             device.address_str().c_str(),
-             format_hex_pretty(sd.uuid.data(), sd.uuid.size()).c_str(),
-             format_hex_pretty(sd.data.data(), sd.data.size()).c_str());
+                      device.address_str().c_str(),
+                      sd.uuid.to_string().c_str(),
+                      format_hex_pretty(sd.data.data(), sd.data.size()).c_str());
   }
   auto mfg_datas = device.get_manufacturer_datas();
   if (mfg_datas.empty()) {
