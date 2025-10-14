@@ -60,7 +60,7 @@ bool EWaterLevel::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
   uint8_t len = mfg_data.data.size();
 
   ESP_LOGI(TAG, "Manufacturer data size: %u (expected: %u)", len, sizeof(ewaterlevel_data));
-  if(len >= 20){
+  if(len == 20){
     ESP_LOGI(TAG, "Raw manufacturer data: %s", format_hex_pretty(payload, len).c_str());
   }
   if (len == sizeof(ewaterlevel_data)) {
