@@ -46,7 +46,7 @@ bool EWaterLevel::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
     }
     ESP_LOGI(TAG, "parse_device(): MAC address %s found.", device.address_str().c_str());
   }
-  ESP_LOGI(TAG, "Found BLE device: %s", device.address_str().c_str());
+  ESP_LOGI(TAG, "Found BLE device: %s (Name: %s)", device.address_str().c_str(), device.get_name().c_str());
 
   auto mfg_datas = device.get_manufacturer_datas();
   if (mfg_datas.empty()) {
@@ -57,20 +57,7 @@ bool EWaterLevel::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
   const uint8_t *payload = mfg_data.data.data();
   uint8_t len = mfg_data.data.size();
 
-  ESP_LOGI(TAG, "Device: %s, Manufacturer data (len=%u): %s",
-         device.address_str().c_str(),
-         len,
-         format_hex_pretty(payload, len).c_str());
-
   ESP_LOGI(TAG, "Manufacturer data size: %u (expected: %u)", len, sizeof(ewaterlevel_data));
-
-  // ASCII-Ausgabe der Manufacturer Data
-  std::string ascii;
-  for (uint8_t i = 0; i < len; i++) {
-    char c = payload[i];
-    ascii += (c >= 32 && c <= 126) ? c : '.';
-  }
-  ESP_LOGI(TAG, "Manufacturer data (ASCII): %s", ascii.c_str());
 
   if (len == sizeof(ewaterlevel_data)) {
     const ewaterlevel_data *data = (ewaterlevel_data *) payload;
