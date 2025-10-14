@@ -12,9 +12,9 @@ namespace ewaterlevel_ble {
 
 struct ewaterlevel_data {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)
   // 0x02010617FF
-  u_int8_t preamble[5];
+  // u_int8_t preamble[5];
   // "WTRL" - Waterlevel
-  char header[4];
+  // char header[4];
   u_int16_t counter;
   /*
    * 00 - Invalid value / Too Low
