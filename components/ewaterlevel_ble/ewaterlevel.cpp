@@ -46,18 +46,7 @@ bool EWaterLevel::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
     }
   }
   ESP_LOGI(TAG, "Found BLE device: %s (Name: %s)", device.address_str().c_str(), device.get_name().c_str());
-  // Logge Appearance und Advertising Flags
-  ESP_LOGI(TAG, "[%s] Appearance: 0x%04X", device.address_str().c_str(), device.get_appearance());
-  ESP_LOGI(TAG, "[%s] AD Flags: 0x%02X", device.address_str().c_str(), device.get_ad_flag());
 
-  // Logge alle Service Data-Blöcke
-  auto service_datas = device.get_service_datas();
-  for (const auto &sd : service_datas) {
-    ESP_LOGI(TAG, "[%s] Service Data: UUID: %s, Data: %s",
-                      device.address_str().c_str(),
-                      sd.uuid.to_string().c_str(),
-                      format_hex_pretty(sd.data.data(), sd.data.size()).c_str());
-  }
   auto mfg_datas = device.get_manufacturer_datas();
   if (mfg_datas.empty()) {
     return false;
