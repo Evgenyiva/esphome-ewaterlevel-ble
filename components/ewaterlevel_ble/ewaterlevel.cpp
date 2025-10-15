@@ -59,18 +59,28 @@ bool EWaterLevel::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
   //  return false;
   //}
 
-  // Rohdaten auslesen (komplettes Advertising Payload)
   const auto &result = device.get_scan_result();
 
-  // advertisement + scan response kombinieren
   std::vector<uint8_t> payload_vec;
-  auto adv = result.get_advertisement();
-  payload_vec.insert(payload_vec.end(), adv.begin(), adv.end());
-  auto scan = result.get_scan_response();
-  payload_vec.insert(payload_vec.end(), scan.begin(), scan.end());
 
+  // Herstellerdaten hinzufügen
+  auto mfg_datas = result.get_manufacturer_datas();
+  for (auto &mfg : mfg_datas) {
+    payload_vec.insert(payload_vec.end(), mfg.data.begin(), mfg.data.end());
+  }
+
+  // Service-Daten hinzufügen
+  auto svc_datas = result.get_service_datas();
+  for (auto &svc : svc_datas) {
+    payload_vec.insert(payload_vec.end(), svc.data.begin(), svc.data.end());
+  }
+
+  // Nun kombinierter Payload wie früher (~30 Bytes)
   const uint8_t *payload = payload_vec.data();
   uint8_t len = payload_vec.size();
+
+  ESP_LOGI(TAG, "Combined manufacturer + service data: %u bytes", len);
+  ESP_LOGI(TAG, "Payload: %s", format_hex_pretty(payload, len).c_str());
 
   ESP_LOGI(TAG, "Manufacturer data size: %u (expected: %u)", len, sizeof(ewaterlevel_data));
 
