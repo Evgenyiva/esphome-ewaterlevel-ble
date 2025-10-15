@@ -45,14 +45,17 @@ bool EWaterLevel::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
     ESP_LOGI(TAG, "Found BLE device: %s (Name: %s)", device.address_str().c_str(), device.get_name().c_str());
   }
 
+  auto mfg_datas = device.get_service_datas();
+  for (const auto &service_data : mfg_datas) {
+    ESP_LOGI(TAG, "Service UUID: %s", service_data.uuid.to_string().c_str());
+    ESP_LOGI(TAG, "Service Data: %s", format_hex_pretty(service_data.data.data(), service_data.data.size()).c_str());
+  }
+
    auto mfg_datas = device.get_manufacturer_datas();
    if (mfg_datas.empty()) {
      return false;
    }
    auto mfg_data = mfg_datas[0];
-
-  std::string uuid_str = mfg_data.uuid.to_string();
-  ESP_LOGI(TAG, "UUID als String: %s", uuid_str.c_str());
 
   // Zugriff auf das zusammengefügte Payload
   const uint8_t *payload = mfg_data.data.data();

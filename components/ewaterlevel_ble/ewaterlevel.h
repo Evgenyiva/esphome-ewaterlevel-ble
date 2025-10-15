@@ -14,7 +14,7 @@ struct ewaterlevel_data {  // NOLINT(readability-identifier-naming,altera-struct
   // 0x02010617FF
   //u_int8_t preamble[5];
   // "WTRL" - Waterlevel
-  char header[22];
+  char header[2];
   u_int16_t counter;
   /*
    * 00 - Invalid value / Too Low
@@ -71,8 +71,7 @@ struct ewaterlevel_data {  // NOLINT(readability-identifier-naming,altera-struct
   //}
 
   inline bool validate_header() const {
-    return this->header[0] == 'W' && this->header[1] == 'T' &&
-           this->header[2] == 'R' && this->header[3] == 'L';
+    return this->header[2] == 'R' && this->header[3] == 'L';
   }
 
   inline bool validate_state_a() const { return this->state_a > 0x00 && this->state_a < 0x06; }
