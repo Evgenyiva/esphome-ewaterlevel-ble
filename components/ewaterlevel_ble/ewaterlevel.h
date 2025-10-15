@@ -72,7 +72,7 @@ struct ewaterlevel_data {  // NOLINT(readability-identifier-naming,altera-struct
 
   inline bool validate_state_a() const { return this->state_a > 0x00 && this->state_a < 0x06; }
 
-  inline float read_counter() const { return 0.001f * convert_big_endian(this->counter) * 4.0f; }
+  //inline float read_counter() const { return 0.001f * convert_big_endian(this->counter) * 4.0f; }
 
   inline float read_battery_voltage() const { return 0.001f * this->battery_voltage; }
 
