@@ -59,7 +59,7 @@ bool EWaterLevel::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
   //  return false;
   //}
 
-  const esp_ble_gap_cb_param_t::ble_scan_result_evt_param &param = device.get_scan_result();
+  const auto &result = device.get_scan_result();
   const uint8_t *payload = param.ble_adv;
   uint8_t len = param.adv_data_len + param.scan_rsp_len;
   if (len == sizeof(ewaterlevel_data)) {
@@ -67,10 +67,10 @@ bool EWaterLevel::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
            format_hex_pretty(payload, len).c_str());
 
     const ewaterlevel_data *data = (ewaterlevel_data *) payload;
-    //if (!data->validate_header()) {
-    //  ESP_LOGI(TAG, "Header validation failed!");
-    //  return false;
-    //}
+    if (!data->validate_header()) {
+      ESP_LOGI(TAG, "Header validation failed!");
+      return false;
+    }
 
     if (this->address_ == 0) {
       ESP_LOGI(TAG, "E-Waterlevel SENSOR FOUND: %s", device.address_str().c_str());
@@ -84,16 +84,15 @@ bool EWaterLevel::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
     ESP_LOGI(TAG, "[%s] State_A: %s, State_B: %s, State_C: %s", device.address_str().c_str(),
              format_hex(&data->state_a, 1).c_str(), format_hex(&data->state_b, 1).c_str(),
              format_hex(&data->state_c, 1).c_str());
-    //ESP_LOGI(TAG, "[%s] Time: %.2f, Bat: %.3fV, Value: %.3f", device.address_str().c_str(), data->read_counter(),
-    ESP_LOGI(TAG, "[%s] Bat: %.3fV, Value: %.3f", device.address_str().c_str(),
+    ESP_LOGI(TAG, "[%s] Time: %.2f, Bat: %.3fV, Value: %.3f", device.address_str().c_str(), data->read_counter(),
              data->read_battery_voltage(), data->read_value());
     ESP_LOGI(TAG, "[%s] Waterlevel: %.1fcm, Percentage: %.1f%%", device.address_str().c_str(),
              this->water_height_in_cm_(data),
              clamp_percentage(this->water_height_in_cm_(data) / this->pin_length_(data) * 100.0f));
 
-    //if (this->time_ != nullptr) {
-    //  this->time_->publish_state(data->read_counter());
-    //}
+    if (this->time_ != nullptr) {
+      this->time_->publish_state(data->read_counter());
+    }
 
     if (this->value_ != nullptr) {
       this->value_->publish_state(data->read_value());
