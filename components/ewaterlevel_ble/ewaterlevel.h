@@ -15,7 +15,7 @@ struct ewaterlevel_data {  // NOLINT(readability-identifier-naming,altera-struct
   // u_int8_t preamble[5];
   // "WTRL" - Waterlevel
   // char header[4];
-  //u_int16_t counter;
+  u_int16_t counter;
   /*
    * 00 - Invalid value / Too Low
    * 01 - Valid value / Very Low
@@ -71,7 +71,7 @@ struct ewaterlevel_data {  // NOLINT(readability-identifier-naming,altera-struct
 
   inline bool validate_state_a() const { return this->state_a > 0x00 && this->state_a < 0x06; }
 
-  //inline float read_counter() const { return 0.001f * convert_big_endian(this->counter) * 4.0f; }
+  inline float read_counter() const { return 0.001f * convert_big_endian(this->counter) * 4.0f; }
 
   inline float read_battery_voltage() const { return 0.001f * this->battery_voltage; }
 

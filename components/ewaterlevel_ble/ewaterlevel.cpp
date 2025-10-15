@@ -38,14 +38,12 @@ void EWaterLevel::dump_config() {
  * - Bluetooth data frame header
  */
 bool EWaterLevel::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
-  ESP_LOGI(TAG, "Parse device started!");
-
   if (this->address_ != 0) {
     if (device.address_uint64() != this->address_) {
       return false;
     }
+    ESP_LOGI(TAG, "Found BLE device: %s (Name: %s)", device.address_str().c_str(), device.get_name().c_str());
   }
-  ESP_LOGI(TAG, "Found BLE device: %s (Name: %s)", device.address_str().c_str(), device.get_name().c_str());
 
   auto mfg_datas = device.get_manufacturer_datas();
   if (mfg_datas.empty()) {
@@ -56,9 +54,15 @@ bool EWaterLevel::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
   const uint8_t *payload = mfg_data.data.data();
   uint8_t len = mfg_data.data.size();
 
-  ESP_LOGI(TAG, "Manufacturer data size: %u (expected: %u)", len, sizeof(ewaterlevel_data));
+  //if (len > sizeof(ewaterlevel_data)) {
+  //  ESP_LOGI(TAG, "Manufacturer data size: %u (expected: %u)", len, sizeof(ewaterlevel_data));
+  //  return false;
+  //}
 
   if (len == sizeof(ewaterlevel_data)) {
+    ESP_LOGI(TAG, "Raw manufacturer data: %s",
+           format_hex_pretty(payload, len).c_str());
+
     const ewaterlevel_data *data = (ewaterlevel_data *) payload;
     //if (!data->validate_header()) {
     //  ESP_LOGI(TAG, "Header validation failed!");
@@ -69,7 +73,7 @@ bool EWaterLevel::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
       ESP_LOGI(TAG, "E-Waterlevel SENSOR FOUND: %s", device.address_str().c_str());
     }
 
-    ESP_LOGV(TAG, "[%s] Sensor data: %s", device.address_str().c_str(),
+    ESP_LOGI(TAG, "[%s] Sensor data: %s", device.address_str().c_str(),
              format_hex_pretty(payload, len).c_str());
     ESP_LOGI(TAG, "[%s] HW: V%u.%u SW: V%u.%u, ShortPin: %.1fcm, LongPin: %.1fcm", device.address_str().c_str(),
              data->version_hw_high, data->version_hw_low, data->version_sw_high, data->version_sw_low,
@@ -77,16 +81,15 @@ bool EWaterLevel::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
     ESP_LOGI(TAG, "[%s] State_A: %s, State_B: %s, State_C: %s", device.address_str().c_str(),
              format_hex(&data->state_a, 1).c_str(), format_hex(&data->state_b, 1).c_str(),
              format_hex(&data->state_c, 1).c_str());
-    //ESP_LOGI(TAG, "[%s] Time: %.2f, Bat: %.3fV, Value: %.3f", device.address_str().c_str(), data->read_counter(),
-    ESP_LOGI(TAG, "[%s] Bat: %.3fV, Value: %.3f", device.address_str().c_str(),
+    ESP_LOGI(TAG, "[%s] Time: %.2f, Bat: %.3fV, Value: %.3f", device.address_str().c_str(), data->read_counter(),
              data->read_battery_voltage(), data->read_value());
     ESP_LOGI(TAG, "[%s] Waterlevel: %.1fcm, Percentage: %.1f%%", device.address_str().c_str(),
              this->water_height_in_cm_(data),
              clamp_percentage(this->water_height_in_cm_(data) / this->pin_length_(data) * 100.0f));
 
-    //if (this->time_ != nullptr) {
-    //  this->time_->publish_state(data->read_counter());
-    //}
+    if (this->time_ != nullptr) {
+      this->time_->publish_state(data->read_counter());
+    }
 
     if (this->value_ != nullptr) {
       this->value_->publish_state(data->read_value());
