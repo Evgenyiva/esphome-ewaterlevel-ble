@@ -12,7 +12,7 @@ namespace ewaterlevel_ble {
 
 struct ewaterlevel_data {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)
   // 0x02010617FF
-  u_int8_t preamble[5];
+  //u_int8_t preamble[5];
   // "WTRL" - Waterlevel
   char header[4];
   u_int16_t counter;
@@ -48,7 +48,7 @@ struct ewaterlevel_data {  // NOLINT(readability-identifier-naming,altera-struct
   // Repeat of upper bit of `value`.
   u_int8_t value_high;
   u_int16_t short_pin_length;
-  u_int16_t long_pin_length;
+  u_int8_t long_pin_length;
   /*
    * Bits:
    * 0 - Fast mode
@@ -60,9 +60,15 @@ struct ewaterlevel_data {  // NOLINT(readability-identifier-naming,altera-struct
    * 6 - Value decreasing
    * 7 - ??
    */
-  u_int8_t state_c;
-  u_int8_t empty;
+  //u_int8_t state_c;
+  //u_int8_t empty;
   //u_int8_t empty2;
+
+  //inline bool validate_header() const {
+  //  return this->preamble[0] == 0x02 && this->preamble[1] == 0x01 && this->preamble[2] == 0x06 &&
+  //         this->preamble[3] == 0x17 && this->preamble[4] == 0xFF && this->header[0] == 'W' && this->header[1] == 'T' &&
+  //         this->header[2] == 'R' && this->header[3] == 'L';
+  //}
 
   inline bool validate_header() const {
     return this->preamble[0] == 0x02 && this->preamble[1] == 0x01 && this->preamble[2] == 0x06 &&

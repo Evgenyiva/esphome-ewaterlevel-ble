@@ -49,22 +49,27 @@ bool EWaterLevel::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
    if (mfg_datas.empty()) {
      return false;
    }
-   for (const auto &mfg_data : mfg_datas) {
-     const uint8_t *payload = mfg_data.data.data();
-     uint8_t len = mfg_data.data.size();
-
-    // UUID als String ausgeben
-    ESP_LOGI(TAG, "[%s] Sensor ps: %s", device.address_str().c_str(),
-             mfg_data.uuid.to_string().c_str());
-
-     ESP_LOGI(TAG, "[%s] Sensor data: %s", device.address_str().c_str(),
-              format_hex_pretty(payload, len).c_str());
-   }
    auto mfg_data = mfg_datas[0];
 
-   const uint8_t *payload = mfg_data.data.data();
-   uint8_t len = mfg_data.data.size();
+  // UUID als native Bytes holen (z.B. 2 oder 16 Bytes, je nach UUID-Typ)
+  auto uuid_bytes = mfg_data.uuid.get_native(); // gibt uint16_t oder std::array<uint8_t, 16> zurück
 
+  std::vector<uint8_t> payload;
+
+  // UUID-Bytes anhängen
+  if constexpr (std::is_same<decltype(uuid_bytes), uint16_t>::value) {
+    payload.push_back(static_cast<uint8_t>(uuid_bytes & 0xFF));
+    payload.push_back(static_cast<uint8_t>((uuid_bytes >> 8) & 0xFF));
+  } else {
+    payload.insert(payload.end(), uuid_bytes.begin(), uuid_bytes.end());
+  }
+
+  // Daten anhängen
+  payload.insert(payload.end(), mfg_data.data.begin(), mfg_data.data.end());
+
+  // Zugriff auf das zusammengefügte Payload
+  const uint8_t *payload = payload.data();
+  size_t len = payload.size();
   ESP_LOGI(TAG, "Manufacturer data size: %u (expected: %u)", len, sizeof(ewaterlevel_data));
 
   if (len == sizeof(ewaterlevel_data)) {
