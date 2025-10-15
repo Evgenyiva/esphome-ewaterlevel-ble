@@ -45,49 +45,29 @@ bool EWaterLevel::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
     ESP_LOGI(TAG, "Found BLE device: %s (Name: %s)", device.address_str().c_str(), device.get_name().c_str());
   }
 
-  // auto mfg_datas = device.get_manufacturer_datas();
-  // if (mfg_datas.empty()) {
-  //   return false;
-  // }
-  // auto mfg_data = mfg_datas[0];
-//
-  // const uint8_t *payload = mfg_data.data.data();
-  // uint8_t len = mfg_data.data.size();
+   auto mfg_datas = device.get_manufacturer_datas();
+   if (mfg_datas.empty()) {
+     return false;
+   }
+   foreach (const auto &mfg_data : mfg_datas) {
+     const uint8_t *payload = mfg_data.data.data();
+     const uint8_t *ps = mfg_data.uuid.data();
+     uint8_t len = mfg_data.data.size();
 
-  //if (len > sizeof(ewaterlevel_data)) {
-  //  ESP_LOGI(TAG, "Manufacturer data size: %u (expected: %u)", len, sizeof(ewaterlevel_data));
-  //  return false;
-  //}
+     ESP_LOGI(TAG, "[%s] Sensor ps: %s", device.address_str().c_str(),
+     format_hex_pretty(ps, len).c_str());
 
-  const auto &result = device.get_scan_result();
+     ESP_LOGI(TAG, "[%s] Sensor data: %s", device.address_str().c_str(),
+              format_hex_pretty(payload, len).c_str());
+   }
+   auto mfg_data = mfg_datas[0];
 
-  std::vector<uint8_t> payload_vec;
-
-  // Herstellerdaten hinzufügen
-  auto mfg_datas = result.get_manufacturer_datas();
-  for (auto &mfg : mfg_datas) {
-    payload_vec.insert(payload_vec.end(), mfg.data.begin(), mfg.data.end());
-  }
-
-  // Service-Daten hinzufügen
-  auto svc_datas = result.get_service_datas();
-  for (auto &svc : svc_datas) {
-    payload_vec.insert(payload_vec.end(), svc.data.begin(), svc.data.end());
-  }
-
-  // Nun kombinierter Payload wie früher (~30 Bytes)
-  const uint8_t *payload = payload_vec.data();
-  uint8_t len = payload_vec.size();
-
-  ESP_LOGI(TAG, "Combined manufacturer + service data: %u bytes", len);
-  ESP_LOGI(TAG, "Payload: %s", format_hex_pretty(payload, len).c_str());
+   const uint8_t *payload = mfg_data.data.data();
+   uint8_t len = mfg_data.data.size();
 
   ESP_LOGI(TAG, "Manufacturer data size: %u (expected: %u)", len, sizeof(ewaterlevel_data));
 
   if (len == sizeof(ewaterlevel_data)) {
-    ESP_LOGI(TAG, "Raw manufacturer data: %s",
-           format_hex_pretty(payload, len).c_str());
-
     const ewaterlevel_data *data = reinterpret_cast<const ewaterlevel_data *>(payload);
     if (!data->validate_header()) {
       ESP_LOGI(TAG, "Header validation failed!");
