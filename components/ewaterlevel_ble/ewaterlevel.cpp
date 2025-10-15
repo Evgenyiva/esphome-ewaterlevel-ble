@@ -56,7 +56,7 @@ bool EWaterLevel::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
 
   // Zugriff auf das zusammengefügte Payload
   const uint8_t *payload = mfg_data.data.data();
-  size_t len = payload.size();
+  size_t len = mfg_data.data.size();
   ESP_LOGI(TAG, "Manufacturer data size: %u (expected: %u)", len, sizeof(ewaterlevel_data));
 
   if (len == sizeof(ewaterlevel_data)) {
