@@ -51,24 +51,16 @@ bool EWaterLevel::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
    }
    auto mfg_data = mfg_datas[0];
 
-// UUID als String holen und als Bytes anhängen (alternativ: Rohbytes verwenden, falls möglich)
-  auto uuid = mfg_data.uuid.get_uuid();
-  std::vector<uint8_t> payload;
-  payload.push_back(uuid[0]);
-  payload.push_back(uuid[1]);
-
-  // Daten anhängen
-  payload.insert(payload.end(), mfg_data.data.begin(), mfg_data.data.end());
+  std::string uuid_str = mfg_data.uuid.to_string();
+  ESP_LOGI(TAG, "UUID als String: %s", uuid_str.c_str());
 
   // Zugriff auf das zusammengefügte Payload
-  const uint8_t *payload_ptr = payload.data();
+  const uint8_t *payload = mfg_data.data.data();
   size_t len = payload.size();
   ESP_LOGI(TAG, "Manufacturer data size: %u (expected: %u)", len, sizeof(ewaterlevel_data));
 
-  ESP_LOGI(TAG, "[%s] Sensor data: %s", device.address_str().c_str(),
-           format_hex_pretty(payload_ptr, len).c_str());
   if (len == sizeof(ewaterlevel_data)) {
-    const ewaterlevel_data *data = reinterpret_cast<const ewaterlevel_data *>(payload_ptr);
+    const ewaterlevel_data *data = reinterpret_cast<const ewaterlevel_data *>(payload);
     if (!data->validate_header()) {
       ESP_LOGI(TAG, "Header validation failed!");
       return false;
@@ -78,6 +70,8 @@ bool EWaterLevel::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
       ESP_LOGI(TAG, "E-Waterlevel SENSOR FOUND: %s", device.address_str().c_str());
     }
 
+    ESP_LOGI(TAG, "[%s] Sensor data: %s", device.address_str().c_str(),
+             format_hex_pretty(payload, len).c_str());
     ESP_LOGI(TAG, "[%s] HW: V%u.%u SW: V%u.%u, ShortPin: %.1fcm, LongPin: %.1fcm", device.address_str().c_str(),
              data->version_hw_high, data->version_hw_low, data->version_sw_high, data->version_sw_low,
              data->read_short_pin_length(), data->read_long_pin_length());

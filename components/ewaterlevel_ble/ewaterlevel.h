@@ -14,7 +14,7 @@ struct ewaterlevel_data {  // NOLINT(readability-identifier-naming,altera-struct
   // 0x02010617FF
   //u_int8_t preamble[5];
   // "WTRL" - Waterlevel
-  char header[4];
+  char header[22];
   u_int16_t counter;
   /*
    * 00 - Invalid value / Too Low
