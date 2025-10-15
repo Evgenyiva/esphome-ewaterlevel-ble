@@ -58,15 +58,20 @@ bool EWaterLevel::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
   //  ESP_LOGI(TAG, "Manufacturer data size: %u (expected: %u)", len, sizeof(ewaterlevel_data));
   //  return false;
   //}
-
   const auto &result = device.get_scan_result();
-  const uint8_t *payload = param.ble_adv;
-  uint8_t len = param.adv_data_len + param.scan_rsp_len;
+
+  // Rohdaten auslesen (komplettes Advertising Payload)
+  const std::vector<uint8_t> &payload_vec = result.get_payload();
+  const uint8_t *payload = payload_vec.data();
+  uint8_t len = payload_vec.size();
+
+  ESP_LOGI(TAG, "Manufacturer data size: %u (expected: %u)", len, sizeof(ewaterlevel_data));
+
   if (len == sizeof(ewaterlevel_data)) {
     ESP_LOGI(TAG, "Raw manufacturer data: %s",
            format_hex_pretty(payload, len).c_str());
 
-    const ewaterlevel_data *data = (ewaterlevel_data *) payload;
+    const ewaterlevel_data *data = reinterpret_cast<const ewaterlevel_data *>(payload);
     if (!data->validate_header()) {
       ESP_LOGI(TAG, "Header validation failed!");
       return false;
