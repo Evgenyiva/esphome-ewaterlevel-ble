@@ -12,10 +12,10 @@ namespace ewaterlevel_ble {
 
 struct ewaterlevel_data {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)
   // 0x02010617FF
-  // u_int8_t preamble[5];
+  u_int8_t preamble[5];
   // "WTRL" - Waterlevel
-  // char header[4];
-  //u_int16_t counter;
+  char header[4];
+  u_int16_t counter;
   /*
    * 00 - Invalid value / Too Low
    * 01 - Valid value / Very Low
@@ -62,17 +62,17 @@ struct ewaterlevel_data {  // NOLINT(readability-identifier-naming,altera-struct
    */
   u_int8_t state_c;
   u_int8_t empty;
-  u_int8_t empty2;
+  //u_int8_t empty2;
 
-  // inline bool validate_header() const {
-  //   return this->preamble[0] == 0x02 && this->preamble[1] == 0x01 && this->preamble[2] == 0x06 &&
-  //          this->preamble[3] == 0x17 && this->preamble[4] == 0xFF && this->header[0] == 'W' && this->header[1] == 'T' &&
-  //          this->header[2] == 'R' && this->header[3] == 'L';
-  // }
+  inline bool validate_header() const {
+    return this->preamble[0] == 0x02 && this->preamble[1] == 0x01 && this->preamble[2] == 0x06 &&
+           this->preamble[3] == 0x17 && this->preamble[4] == 0xFF && this->header[0] == 'W' && this->header[1] == 'T' &&
+           this->header[2] == 'R' && this->header[3] == 'L';
+  }
 
   inline bool validate_state_a() const { return this->state_a > 0x00 && this->state_a < 0x06; }
 
-  //inline float read_counter() const { return 0.001f * convert_big_endian(this->counter) * 4.0f; }
+  inline float read_counter() const { return 0.001f * convert_big_endian(this->counter) * 4.0f; }
 
   inline float read_battery_voltage() const { return 0.001f * this->battery_voltage; }
 
