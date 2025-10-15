@@ -49,7 +49,7 @@ bool EWaterLevel::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
    if (mfg_datas.empty()) {
      return false;
    }
-   foreach (const auto &mfg_data : mfg_datas) {
+   for (const auto &mfg_data : mfg_datas) {
      const uint8_t *payload = mfg_data.data.data();
      const uint8_t *ps = mfg_data.uuid.data();
      uint8_t len = mfg_data.data.size();
