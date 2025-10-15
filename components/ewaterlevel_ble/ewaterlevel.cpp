@@ -52,9 +52,10 @@ bool EWaterLevel::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
    auto mfg_data = mfg_datas[0];
 
 // UUID als String holen und als Bytes anhängen (alternativ: Rohbytes verwenden, falls möglich)
-  std::string uuid_str = mfg_data.uuid.to_string();
+  uint16_t uuid = mfg_data.uuid.get();
   std::vector<uint8_t> payload;
-  payload.insert(payload.end(), uuid_str.begin(), uuid_str.end());
+  payload.push_back(static_cast<uint8_t>(uuid & 0xFF));
+  payload.push_back(static_cast<uint8_t>((uuid >> 8) & 0xFF));
 
   // Daten anhängen
   payload.insert(payload.end(), mfg_data.data.begin(), mfg_data.data.end());
