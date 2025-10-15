@@ -51,11 +51,11 @@ bool EWaterLevel::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
    }
    for (const auto &mfg_data : mfg_datas) {
      const uint8_t *payload = mfg_data.data.data();
-     const uint8_t *ps = mfg_data.uuid.data();
      uint8_t len = mfg_data.data.size();
 
-     ESP_LOGI(TAG, "[%s] Sensor ps: %s", device.address_str().c_str(),
-     format_hex_pretty(ps, len).c_str());
+    // UUID als String ausgeben
+    ESP_LOGI(TAG, "[%s] Sensor ps: %s", device.address_str().c_str(),
+             mfg_data.uuid.to_string().c_str());
 
      ESP_LOGI(TAG, "[%s] Sensor data: %s", device.address_str().c_str(),
               format_hex_pretty(payload, len).c_str());
