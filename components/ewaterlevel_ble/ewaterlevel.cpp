@@ -130,14 +130,28 @@ bool EWaterLevel::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
       this->battery_voltage_->publish_state(data->read_battery_voltage());
     }
 
+    // Battery percentage estimation.
+    // The sensor is powered by a standard CR2032 coin cell (confirmed by README).
+    // The linear approximation below is UNCALIBRATED and tends to read empty too
+    // early, because a CR2032 has a non-linear discharge plateau (it holds a fairly
+    // flat voltage for most of its life, then drops off sharply near the end).
+    // A future piecewise-linear lookup should replace this once real discharge data
+    // exists. Reference support points (open-circuit estimates):
+    //   >=3.00V = 100%
+    //     2.90V =  80%
+    //     2.80V =  60%
+    //     2.70V =  40%
+    //     2.60V =  20%
+    //     2.50V =   5%
+    //   <=2.40V =   0%
+    // These are open-circuit values and must be shifted ~0.05-0.1V down to account
+    // for the BLE pulse load, to be calibrated against real `battery_voltage` logs.
+    // TODO: replace linear battery % with calibrated CR2032 piecewise curve once
+    // hardware discharge data is available.
     if (this->battery_level_ != nullptr) {
       const auto battery_volt = data->read_battery_voltage();
-      if (std::isnan(battery_volt)) {
-        this->battery_level_->publish_state(NAN);
-      } else {
-        float percent = (battery_volt - 2.2f) / 0.65f * 100.0f;
-        this->battery_level_->publish_state(clamp_percentage(percent));
-      }
+      float percent = (battery_volt - 2.2f) / 0.65f * 100.0f;
+      this->battery_level_->publish_state(clamp_percentage(percent));
     }
 
     return true;
