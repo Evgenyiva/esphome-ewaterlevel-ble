@@ -25,6 +25,7 @@ from esphome.const import (
 from ._shared import (
     EWaterlevel_schema,
     EWaterlevel_to_code,
+    validate_value_range,
 )
 
 DEPENDENCIES = ["esp32_ble_tracker"]
@@ -74,6 +75,8 @@ CONFIG_SCHEMA = (
     )
     .extend(EWaterlevel_schema)
 )
+
+CONFIG_SCHEMA = cv.All(CONFIG_SCHEMA, validate_value_range)
 
 
 async def to_code(config):

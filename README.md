@@ -14,7 +14,7 @@ In this fork, I have fixed the issue with compiling.
 
 ```yaml
 external_components:
-  - source: github://Fabian-Schmidt/esphome-ewaterlevel
+  - source: github://Evgenyiva/esphome-ewaterlevel-ble
     components: ["ewaterlevel_ble"]
 
 esp32_ble_tracker:
@@ -41,15 +41,15 @@ Two options are available:
 2. Connect with log and scan for value like:
    - `[AA:BB:CC:DD:EE:FF] Time: 28.47, Bat: 2.946V, Value: 0.330`
 3. Measure 3 points:
-   - `min_value` - What value is measured when ~2cm is water is present (the transparent end cap).
+   - `min_value` - What value is measured when ~2cm of water is present (the transparent end cap).
    - `max_value` - What value is measured when the tank is full.
-   - `length`- If you have cut down the pin enter here the length in cm.
+   - `length` - If you have cut down the pin, enter its length in cm here.
 4. Update the value and upload a new version and check that the measurements are correct:
    - `[AA:BB:CC:DD:EE:FF] Waterlevel: 28.7cm, Percentage: 75.1%`
 
 ```yaml
 external_components:
-  - source: github://Fabian-Schmidt/esphome-ewaterlevel
+  - source: github://Evgenyiva/esphome-ewaterlevel-ble
     components: ["ewaterlevel_ble"]
 
 esp32_ble_tracker:
@@ -69,14 +69,14 @@ sensor:
 
 ### Display calibration
 
-This example uses an WT32-SC01.
+This example uses a WT32-SC01.
 
 1. Run ESP Home with `ewaterlevel_ble` component and mac address. Take note the component is now a sensor.
 2. Measure 3 points:
-   - `min_value` - What value is measured when ~2cm is water is present (the transparent end cap).
+   - `min_value` - What value is measured when ~2cm of water is present (the transparent end cap).
    - `max_value` - What value is measured when the tank is full.
-   - `length`- If you have cut down the pin enter here the length in cm.
-4. Update the value and upload a new version and check that the measurements are correct:
+   - `length` - If you have cut down the pin, enter its length in cm here.
+3. Update the value and upload a new version and check that the measurements are correct:
 
 ![Display calibration with WT32-SC01](img/calibrate-display.jpg)
 
@@ -88,7 +88,7 @@ Run ESP Home with `ewaterlevel_ble` component and mac address and your calibrati
 
 ```yaml
 external_components:
-  - source: github://Fabian-Schmidt/esphome-ewaterlevel
+  - source: github://Evgenyiva/esphome-ewaterlevel-ble
     components: ["ewaterlevel_ble"]
 
 esp32_ble_tracker:

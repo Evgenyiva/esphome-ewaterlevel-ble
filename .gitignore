@@ -1,3 +1,17 @@
 /.esphome/**
 
 **/__pycache__/**
+
+# --- Agentic / local-only (nichts davon raus) ---
+/docs/
+.claude/
+CLAUDE.md
+CLAUDE.local.md
+AGENTS.md
+.serena/
+.aider*
+.cursor/
+.cursorrules
+.github/copilot-instructions.md
+*.local
+.DS_Store
