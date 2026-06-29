@@ -8,7 +8,7 @@
 namespace esphome {
 namespace ewaterlevel_ble {
 
-static const char *const TAG = "e-waterlevel_ble";
+static const char *const TAG = "ewaterlevel_ble";
 
 void EWaterLevel::dump_config() {
   ESP_LOGCONFIG(TAG, "E-Waterlevel-BLE");
@@ -62,7 +62,7 @@ bool EWaterLevel::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
    // company id as exposed here is unverified.
    // TODO: confirm uuid byte-order with hardware before enabling.
 
-  // Zugriff auf das zusammengefügte Payload
+  // Access the assembled payload
   const uint8_t *payload = mfg_data.data.data();
   size_t len = mfg_data.data.size();
   ESP_LOGV(TAG, "Manufacturer data size: %u (expected: %u)", len, sizeof(ewaterlevel_data));
@@ -104,9 +104,6 @@ bool EWaterLevel::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
       ESP_LOGI(TAG, "[%s] HW: V%u.%u SW: V%u.%u, ShortPin: %.1fcm, LongPin: %.1fcm", device.address_str().c_str(),
                data->version_hw_high, data->version_hw_low, data->version_sw_high, data->version_sw_low,
                data->read_short_pin_length(), data->read_long_pin_length());
-      //ESP_LOGI(TAG, "[%s] State_A: %s, State_B: %s, State_C: %s", device.address_str().c_str(),
-      //         format_hex(&data->state_a, 1).c_str(), format_hex(&data->state_b, 1).c_str(),
-      //         format_hex(&data->state_c, 1).c_str());
       ESP_LOGI(TAG, "[%s] Time: %.2f, Bat: %.3fV, Value: %.3f", device.address_str().c_str(), data->read_counter(),
                data->read_battery_voltage(), data->read_value());
       ESP_LOGI(TAG, "[%s] Waterlevel: %.1fcm, Percentage: %.1f%%", device.address_str().c_str(),

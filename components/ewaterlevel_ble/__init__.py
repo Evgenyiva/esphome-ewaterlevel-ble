@@ -6,7 +6,7 @@ from ._shared import (
     validate_value_range,
 )
 
-CODEOWNERS = ["@Fabian-Schmidt"]
+CODEOWNERS = ["@Fabian-Schmidt", "@Evgenyiva"]
 
 AUTO_LOAD = ["sensor"]
 DEPENDENCIES = ["esp32_ble_tracker"]

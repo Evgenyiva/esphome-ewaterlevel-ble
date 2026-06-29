@@ -11,11 +11,9 @@ namespace esphome {
 namespace ewaterlevel_ble {
 
 struct ewaterlevel_data {  // NOLINT(readability-identifier-naming,altera-struct-pack-align)
-  // 0x02010617FF
-  //u_int8_t preamble[5];
   // "WTRL" - Waterlevel
   char header[2];
-  u_int16_t counter;
+  uint16_t counter;
   /*
    * 00 - Invalid value / Too Low
    * 01 - Valid value / Very Low
@@ -25,14 +23,14 @@ struct ewaterlevel_data {  // NOLINT(readability-identifier-naming,altera-struct
    * 05 - Valid value / Very High
    * 06.. - Invalid value / Too High
    */
-  u_int8_t state_a;
-  u_int16_t unknown_a;
-  u_int16_t battery_voltage;
-  u_int16_t value;
-  u_int8_t version_sw_low;
-  u_int8_t version_sw_high;
-  u_int8_t version_hw_low;
-  u_int8_t version_hw_high;
+  uint8_t state_a;
+  uint16_t unknown_a;
+  uint16_t battery_voltage;
+  uint16_t value;
+  uint8_t version_sw_low;
+  uint8_t version_sw_high;
+  uint8_t version_hw_low;
+  uint8_t version_hw_high;
   /*
    * Bits:
    * 0 -
@@ -44,13 +42,13 @@ struct ewaterlevel_data {  // NOLINT(readability-identifier-naming,altera-struct
    * 6 - ??
    * 7 - ??
    */
-  u_int8_t state_b;
+  uint8_t state_b;
   // Repeat of upper bit of `value`. Ignored by read_value(): the 16-bit `value`
   // field already suffices for the supported pin range (pin <= 38cm), so this
   // high-bit repeat is intentionally unused.
-  u_int8_t value_high;
-  u_int16_t short_pin_length;
-  u_int8_t long_pin_length;
+  uint8_t value_high;
+  uint16_t short_pin_length;
+  uint8_t long_pin_length;
   /*
    * Bits:
    * 0 - Fast mode
@@ -62,15 +60,6 @@ struct ewaterlevel_data {  // NOLINT(readability-identifier-naming,altera-struct
    * 6 - Value decreasing
    * 7 - ??
    */
-  //u_int8_t state_c;
-  //u_int8_t empty;
-  //u_int8_t empty2;
-
-  //inline bool validate_header() const {
-  //  return this->preamble[0] == 0x02 && this->preamble[1] == 0x01 && this->preamble[2] == 0x06 &&
-  //         this->preamble[3] == 0x17 && this->preamble[4] == 0xFF && this->header[0] == 'W' && this->header[1] == 'T' &&
-  //         this->header[2] == 'R' && this->header[3] == 'L';
-  //}
 
   inline bool validate_header() const {
     return this->header[0] == 'R' && this->header[1] == 'L';
@@ -115,7 +104,7 @@ struct ewaterlevel_data {  // NOLINT(readability-identifier-naming,altera-struct
 } __attribute__((packed));
 
 static inline std::string format_ble_address_pretty(uint64_t address) {
-  u_int8_t *mac = (uint8_t *) &address;
+  uint8_t *mac = (uint8_t *) &address;
   return str_snprintf("%02X:%02X:%02X:%02X:%02X:%02X", 17, mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 }
 
