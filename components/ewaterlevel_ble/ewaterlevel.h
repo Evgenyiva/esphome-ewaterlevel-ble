@@ -148,6 +148,9 @@ class EWaterLevel : public Component, public esp32_ble_tracker::ESPBTDeviceListe
 
  protected:
   uint64_t address_{0};
+  // Timestamp (millis) of the last emitted calibration log block, used to throttle
+  // the matched-device INFO lines to at most once per 5s. Publishing stays per-advert.
+  uint32_t last_log_ms_{0};
   float min_value_{NAN};
   float max_value_{NAN};
   // Below 2cm no accurate measurement is possible.
