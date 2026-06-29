@@ -45,7 +45,9 @@ struct ewaterlevel_data {  // NOLINT(readability-identifier-naming,altera-struct
    * 7 - ??
    */
   u_int8_t state_b;
-  // Repeat of upper bit of `value`.
+  // Repeat of upper bit of `value`. Ignored by read_value(): the 16-bit `value`
+  // field already suffices for the supported pin range (pin <= 38cm), so this
+  // high-bit repeat is intentionally unused.
   u_int8_t value_high;
   u_int16_t short_pin_length;
   u_int8_t long_pin_length;
@@ -76,6 +78,11 @@ struct ewaterlevel_data {  // NOLINT(readability-identifier-naming,altera-struct
 
   inline bool validate_state_a() const { return this->state_a > 0x00 && this->state_a < 0x06; }
 
+  // NOTE: `counter` is read big-endian (convert_big_endian) here, while
+  // battery_voltage, value and short_pin_length are read little-endian (raw
+  // struct access). This endianness inconsistency was taken from upstream and
+  // is UNVERIFIED against real hardware.
+  // TODO: verify against real sensor runtime before trusting/changing.
   inline float read_counter() const { return 0.001f * convert_big_endian(this->counter) * 4.0f; }
 
   inline float read_battery_voltage() const { return 0.001f * this->battery_voltage; }

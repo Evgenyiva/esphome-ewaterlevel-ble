@@ -56,6 +56,11 @@ bool EWaterLevel::parse_device(const esp32_ble_tracker::ESPBTDevice &device) {
      return false;
    }
    auto mfg_data = mfg_datas[0];
+   // Optional robustness: pre-filter by company id, e.g.
+   //   if (mfg_data.uuid.get_uuid() == 0x5457) { ... }
+   // ('WT' = 0x5457). Not enabled because the byte-encoding/byte-order of the
+   // company id as exposed here is unverified.
+   // TODO: confirm uuid byte-order with hardware before enabling.
 
   // Zugriff auf das zusammengefügte Payload
   const uint8_t *payload = mfg_data.data.data();
@@ -133,7 +138,20 @@ float EWaterLevel::water_height_in_cm_(const ewaterlevel_data *data) {
   const auto value = data->read_value();
   const auto pin_length = this->pin_length_(data);
   const auto scaling_factor = (this->max_value_ - this->min_value_) / (pin_length - this->min_length_);
+
+  // Guard against degenerate calibration / pin geometry. The config schema already
+  // enforces max_value > min_value, but pin_length (which may come from the device
+  // at runtime) could equal min_length_ or be NaN, yielding a zero/non-finite
+  // scaling_factor. Return 0 (not NaN) to keep the HA graph continuous.
+  if (scaling_factor == 0.0f || !std::isfinite(scaling_factor)) {
+    return 0.0f;
+  }
+
   const auto height = (value - this->min_value_) / scaling_factor + this->min_length_;
+
+  if (!std::isfinite(height)) {
+    return 0.0f;
+  }
 
   if (height < 0.0f) {
     return 0.0f;

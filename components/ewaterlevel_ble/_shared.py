@@ -13,6 +13,30 @@ EWaterlevel = ewaterlevel_ble_ns.class_(
     "EWaterLevel", cg.Component, esp32_ble_tracker.ESPBTDeviceListener
 )
 
+
+def validate_value_range(config):
+    """Cross-check calibration bounds at config time.
+
+    max_value must be strictly greater than min_value, otherwise the runtime
+    scaling_factor (max - min) becomes 0 or negative, leading to a
+    division-by-zero / NaN in water_height_in_cm_(). Catch it early with a
+    clear error instead of producing a broken sensor.
+    """
+    min_value = config[CONF_MIN_VALUE]
+    max_value = config[CONF_MAX_VALUE]
+    if max_value <= min_value:
+        raise cv.Invalid(
+            f"'{CONF_MAX_VALUE}' ({max_value}) must be greater than "
+            f"'{CONF_MIN_VALUE}' ({min_value}); otherwise the height "
+            f"scaling factor would be zero or negative.",
+            path=[CONF_MAX_VALUE],
+        )
+    return config
+
+
+# NOTE: kept as a dict-based cv.Schema (not wrapped in cv.All) so that
+# sensor.py can still `.extend()` it. The cross-check validator is applied via
+# cv.All at each CONFIG_SCHEMA consumer (__init__.py and sensor.py).
 EWaterlevel_schema = (
     cv.Schema(
         {
